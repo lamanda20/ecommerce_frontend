@@ -4,8 +4,7 @@ import type { Product } from "./types";
 import { CartProvider } from "./CartContext";
 import { useCart } from "./useCart";
 import "./App.css";
-
-const API = import.meta.env.VITE_API_URL;
+import { getProducts } from "./api";
 
 type View = "products" | "cart";
 
@@ -109,7 +108,7 @@ function CartPage() {
 
 function AppShell() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
@@ -118,14 +117,8 @@ function AppShell() {
   const { totalItems } = useCart();
 
   useEffect(() => {
-    setIsLoading(true);
-    setError(null);
 
-    fetch(`${API}/products`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to load products");
-        return res.json();
-      })
+    getProducts()
       .then((data: Product[]) => {
         setProducts(data || []);
       })
